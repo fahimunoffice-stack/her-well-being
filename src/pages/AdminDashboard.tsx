@@ -11,6 +11,8 @@ import { MediaPage } from "@/components/admin/media/MediaPage";
 import { EbooksManager } from "@/components/admin/ebooks/EbooksManager";
 import { AdminSettingsPage } from "@/components/admin/settings/AdminSettingsPage";
 import { AdminAnalyticsPage } from "@/components/admin/analytics/AdminAnalyticsPage";
+import { AdminErrorScreen } from "@/components/admin/AdminErrorScreen";
+import { AdminLogsPage } from "@/components/admin/AdminLogsPage";
 import { LogOut } from "lucide-react";
 
 // Must match ADMIN_PATH in src/App.tsx
@@ -23,32 +25,50 @@ const AdminDashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
  
   useEffect(() => {
     const checkAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session?.user) {
-        navigate(ADMIN_PATH);
-        return;
+      setLoading(true);
+      setAuthError(null);
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        if (!session?.user) {
+          navigate(ADMIN_PATH);
+          return;
+        }
+
+        const { data: roles, error: rolesError } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id);
+
+        if (rolesError) throw rolesError;
+
+        if (!roles?.some((r) => r.role === "admin")) {
+          toast({
+            title: "Access Denied",
+            description: "You don't have admin privileges",
+            variant: "destructive",
+          });
+          navigate("/");
+          return;
+        }
+
+        setUser(session.user);
+        setIsAdmin(true);
+      } catch (err) {
+        console.error("AdminDashboard checkAuth failed", err);
+        setAuthError("সেশন/ব্যাকএন্ড লোড করতে সমস্যা হচ্ছে।");
+      } finally {
+        setLoading(false);
       }
-
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", session.user.id);
-
-      if (!roles?.some((r) => r.role === "admin")) {
-        toast({
-          title: "Access Denied",
-          description: "You don't have admin privileges",
-          variant: "destructive",
-        });
-        navigate("/");
-        return;
-      }
-
-      setUser(session.user);
-      setIsAdmin(true);
-      setLoading(false);
     };
 
     checkAuth();
@@ -70,6 +90,7 @@ const AdminDashboard = () => {
     if (p.includes("/media")) return "Media";
     if (p.includes("/ebooks")) return "Ebooks";
     if (p.includes("/settings")) return "Settings";
+    if (p.includes("/logs")) return "Logs";
     return "Orders";
   }, [location.pathname]);
  
@@ -83,6 +104,19 @@ const AdminDashboard = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-muted-foreground">Loading...</p>
       </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <AdminErrorScreen
+        title="Admin session load failed"
+        description={authError}
+        onRetry={async () => {
+          // re-run the same check by forcing effect path
+          window.location.reload();
+        }}
+      />
     );
   }
 
@@ -109,6 +143,7 @@ const AdminDashboard = () => {
         <Route path="pages" element={<PreviewPagesPage />} />
         <Route path="media" element={<MediaPage />} />
         <Route path="ebooks" element={<EbooksManager />} />
+        <Route path="logs" element={<AdminLogsPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
       </Routes>
     </AdminShell>
