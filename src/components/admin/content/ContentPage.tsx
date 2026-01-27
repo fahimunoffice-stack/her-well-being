@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { MediaUploader } from "@/components/admin/content/MediaUploader";
 import { ReviewsEditor } from "@/components/admin/content/ReviewsEditor";
+import { ReviewsSettingsEditor } from "@/components/admin/content/ReviewsSettingsEditor";
 import { TocEditor } from "@/components/admin/content/TocEditor";
 import { FAQEditor } from "@/components/admin/content/FAQEditor";
 
@@ -99,6 +100,12 @@ export function ContentPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ReviewsSettingsEditor
+        value={content?.reviews_settings}
+        saving={updateContent.isPending}
+        onSave={(next) => updateContent.mutate({ key: "reviews_settings", value: next })}
+      />
 
       <ReviewsEditor value={content?.reviews} saving={updateContent.isPending} onSave={(next) => updateContent.mutate({ key: "reviews", value: next })} />
 

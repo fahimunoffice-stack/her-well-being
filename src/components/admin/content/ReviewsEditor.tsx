@@ -11,6 +11,7 @@ export type ReviewItem = {
   review: string;
   rating: number;
   image_url?: string;
+  image_urls?: string[];
 };
 
 function clampRating(v: number) {
@@ -35,8 +36,11 @@ export function ReviewsEditor({
         review: String(v?.review ?? ""),
         rating: clampRating(Number(v?.rating ?? 5)),
         image_url: String(v?.image_url ?? ""),
+        image_urls: Array.isArray(v?.image_urls)
+          ? (v.image_urls as any[]).map((x) => String(x)).filter(Boolean)
+          : [],
       }))
-      .filter((x) => x.name || x.review || x.image_url);
+      .filter((x) => x.name || x.review || x.image_url || (x.image_urls?.length ?? 0) > 0);
   }, [value]);
 
   const [items, setItems] = useState<ReviewItem[]>(initial);
@@ -52,7 +56,10 @@ export function ReviewsEditor({
             type="button"
             variant="outline"
             onClick={() =>
-              setItems((prev) => [...prev, { name: "", review: "", rating: 5, image_url: "" }])
+              setItems((prev) => [
+                ...prev,
+                { name: "", review: "", rating: 5, image_url: "", image_urls: [] },
+              ])
             }
           >
             Add
@@ -113,22 +120,90 @@ export function ReviewsEditor({
               </div>
             </div>
 
-            <MediaUploader
-              label="Review Screenshot / Image"
-              value={item.image_url ?? ""}
-              accept="image/*"
-              saving={saving}
-              onSave={(url) =>
-                setItems((prev) => {
-                  const next = prev.map((p, i) =>
-                    i === idx ? { ...p, image_url: url } : p
-                  );
-                  // Auto-save when image changes so it shows on the landing page immediately.
-                  onSave(next);
-                  return next;
-                })
-              }
-            />
+            <div className="space-y-3">
+              <MediaUploader
+                label="Review Screenshot / Image (legacy single)"
+                value={item.image_url ?? ""}
+                accept="image/*"
+                saving={saving}
+                onSave={(url) =>
+                  setItems((prev) => {
+                    const next = prev.map((p, i) => (i === idx ? { ...p, image_url: url } : p));
+                    onSave(next);
+                    return next;
+                  })
+                }
+              />
+
+              <div className="rounded-lg border p-3 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-sm font-medium">Multiple screenshots</div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setItems((prev) =>
+                        prev.map((p, i) =>
+                          i === idx
+                            ? { ...p, image_urls: [...(p.image_urls ?? []), ""] }
+                            : p
+                        )
+                      )
+                    }
+                  >
+                    Add image
+                  </Button>
+                </div>
+
+                {(item.image_urls ?? []).length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No extra images yet.</p>
+                ) : null}
+
+                {(item.image_urls ?? []).map((url, imgIdx) => (
+                  <div key={imgIdx} className="space-y-2">
+                    <MediaUploader
+                      label={`Image ${imgIdx + 1}`}
+                      value={url}
+                      accept="image/*"
+                      saving={saving}
+                      onSave={(nextUrl) =>
+                        setItems((prev) => {
+                          const next = prev.map((p, i) => {
+                            if (i !== idx) return p;
+                            const nextUrls = [...(p.image_urls ?? [])];
+                            nextUrls[imgIdx] = nextUrl;
+                            return { ...p, image_urls: nextUrls };
+                          });
+                          onSave(next);
+                          return next;
+                        })
+                      }
+                    />
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() =>
+                          setItems((prev) => {
+                            const next = prev.map((p, i) => {
+                              if (i !== idx) return p;
+                              const nextUrls = (p.image_urls ?? []).filter((_, j) => j !== imgIdx);
+                              return { ...p, image_urls: nextUrls };
+                            });
+                            onSave(next);
+                            return next;
+                          })
+                        }
+                      >
+                        Remove image
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <div className="space-y-2">
               <Label>Review</Label>

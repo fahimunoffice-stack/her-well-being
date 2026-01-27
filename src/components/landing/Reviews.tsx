@@ -1,19 +1,24 @@
- import { Card, CardContent } from "@/components/ui/card";
- import { Star } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Star } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
  
  export const Reviews = () => {
   const { data: content } = useSiteContent(true);
   const reviews = (Array.isArray(content?.reviews) ? content?.reviews : []) as any[];
+
+  const settings = (content?.reviews_settings ?? {}) as any;
+  const autoSlideSeconds = Number(settings?.autoSlideSeconds ?? 0);
+  const mobileCardsPerView = Number(settings?.mobileCardsPerView ?? 1) === 2 ? 2 : 1;
 
   const resolveMedia = (value?: string) => {
     if (!value) return "";
@@ -22,11 +27,27 @@ import {
       : value;
   };
 
+  const normalizeImages = (review: any): string[] => {
+    const fromArray = Array.isArray(review?.image_urls)
+      ? (review.image_urls as any[]).map((x) => String(x)).filter(Boolean)
+      : [];
+    const single = review?.image_url ? [String(review.image_url)] : [];
+    const merged = [...fromArray, ...single].filter(Boolean);
+    // de-dupe while preserving order
+    const seen = new Set<string>();
+    return merged.filter((u) => {
+      const key = String(u);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
   const ReviewImage = ({ src, alt }: { src: string; alt: string }) => {
     const [loaded, setLoaded] = useState(false);
 
     return (
-      <div className="relative mb-4 overflow-hidden rounded-lg border">
+      <div className="relative mb-4 overflow-hidden rounded-lg border bg-muted">
         {/* Blur/skeleton placeholder */}
         <div
           aria-hidden="true"
@@ -43,22 +64,45 @@ import {
           loading="lazy"
           decoding="async"
           onLoad={() => setLoaded(true)}
-          className={`w-full h-52 object-cover transition-all duration-500 ${
-            loaded ? "blur-0 scale-100" : "blur-md scale-[1.02]"
-          }`}
+          className={
+            `w-full h-auto object-contain transition-all duration-500 ` +
+            (loaded ? "blur-0 scale-100" : "blur-md scale-[1.01]")
+          }
         />
       </div>
     );
   };
 
-  const ReviewCard = ({ review }: { review: any }) => (
+  const ReviewCard = ({ review }: { review: any }) => {
+    const images = useMemo(() => normalizeImages(review).map(resolveMedia).filter(Boolean), [review]);
+
+    return (
     <Card className="shadow-lg hover:shadow-xl transition-shadow w-full max-w-md">
       <CardContent className="p-6">
-        {review?.image_url ? (
-          <ReviewImage
-            src={resolveMedia(String(review.image_url))}
-            alt={`রিভিউ স্ক্রিনশট - ${String(review?.name ?? "")}`}
-          />
+        {images.length > 0 ? (
+          <div className="mb-4">
+            {images.length === 1 ? (
+              <ReviewImage
+                src={images[0]}
+                alt={`রিভিউ স্ক্রিনশট - ${String(review?.name ?? "")}`}
+              />
+            ) : (
+              <Carousel opts={{ align: "start" }} className="relative">
+                <CarouselContent>
+                  {images.map((src, i) => (
+                    <CarouselItem key={i} className="basis-full">
+                      <ReviewImage
+                        src={src}
+                        alt={`রিভিউ স্ক্রিনশট ${i + 1} - ${String(review?.name ?? "")}`}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-2 top-1/2 -translate-y-1/2" />
+                <CarouselNext className="right-2 top-1/2 -translate-y-1/2" />
+              </Carousel>
+            )}
+          </div>
         ) : null}
 
         <div className="flex gap-1 mb-3">
@@ -70,7 +114,22 @@ import {
         <p className="font-semibold text-foreground">— {review.name}</p>
       </CardContent>
     </Card>
-  );
+    );
+  };
+
+  const [api, setApi] = useState<CarouselApi | null>(null);
+  const shouldAutoSlide = Number.isFinite(autoSlideSeconds) && autoSlideSeconds > 0;
+
+  useEffect(() => {
+    if (!api || !shouldAutoSlide) return;
+    const ms = Math.max(1200, Math.round(autoSlideSeconds * 1000));
+    const id = window.setInterval(() => {
+      // loop-ish: if can't go next, go back to start
+      if (api.canScrollNext()) api.scrollNext();
+      else api.scrollTo(0);
+    }, ms);
+    return () => window.clearInterval(id);
+  }, [api, shouldAutoSlide, autoSlideSeconds]);
  
    return (
      <section className="py-12 md:py-16 bg-secondary/30">
@@ -88,10 +147,13 @@ import {
             <>
               {/* Mobile: swipe carousel */}
               <div className="lg:hidden max-w-6xl mx-auto">
-                <Carousel opts={{ align: "start" }} className="relative">
+                <Carousel opts={{ align: "start" }} setApi={setApi} className="relative">
                   <CarouselContent>
                     {reviews.map((review, idx) => (
-                      <CarouselItem key={idx} className="basis-full sm:basis-1/2">
+                      <CarouselItem
+                        key={idx}
+                        className={mobileCardsPerView === 2 ? "basis-1/2" : "basis-full"}
+                      >
                         <div className="flex justify-center">
                           <ReviewCard review={review} />
                         </div>
