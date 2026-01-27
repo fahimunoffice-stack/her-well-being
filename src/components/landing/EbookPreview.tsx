@@ -28,7 +28,7 @@ import { supabase } from "@/integrations/supabase/client";
           loading="lazy"
           decoding="async"
           onLoad={() => setLoaded(true)}
-          className={`w-full h-full object-cover transition-all duration-500 ${
+          className={`w-full h-full object-contain transition-all duration-500 ${
             loaded ? "blur-0 scale-100" : "blur-md scale-[1.02]"
           }`}
         />
