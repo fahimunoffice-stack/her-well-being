@@ -75,11 +75,11 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
      }
    };
  
-   return (
-     <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex items-center justify-center p-4">
-       <Card className="max-w-md w-full shadow-2xl">
+    return (
+      <div className="admin-theme min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="max-w-md w-full border-2 shadow-2xl">
          <CardHeader>
-           <CardTitle className="text-center text-2xl">Admin Setup</CardTitle>
+            <CardTitle className="font-display text-center text-2xl">Admin Setup</CardTitle>
            <CardDescription className="text-center">
              Create your first admin account
            </CardDescription>
