@@ -4,15 +4,9 @@ export function Footer() {
   return (
     <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="text-center text-sm text-muted-foreground md:text-left">
-            <div>
-              <span className="font-medium text-foreground">Contact</span>
-            </div>
-            <div className="mt-1 text-xs">
-              Developed by <span className="font-medium text-foreground">Vibe Tech</span> · Developer:
-              <span className="font-medium text-foreground"> Tasin</span>
-            </div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Contact</span>
           </div>
 
           <div className="flex flex-col items-center gap-3 text-sm md:flex-row md:gap-6">
@@ -39,6 +33,11 @@ export function Footer() {
               <Mail className="h-4 w-4" />
               <span>akibhasan325@gmail.com</span>
             </a>
+          </div>
+
+          <div className="text-center text-xs text-muted-foreground">
+            Client project · Developed by <span className="font-medium text-foreground">Vibe Tech</span> · Developer:
+            <span className="font-medium text-foreground"> Tasin</span>
           </div>
         </div>
       </div>
