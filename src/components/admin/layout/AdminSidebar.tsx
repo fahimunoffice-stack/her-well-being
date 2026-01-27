@@ -9,6 +9,7 @@ import {
   Settings,
   ChartColumn,
   ScrollText,
+  Clock,
 } from "lucide-react";
 import {
   Sidebar,
@@ -28,6 +29,7 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
 
 const navItems = [
   { title: "Orders (অর্ডার)", to: `${ADMIN_PATH}/dashboard`, icon: ShoppingCart, end: true },
+  { title: "Pending Orders (পেন্ডিং)", to: `${ADMIN_PATH}/dashboard/pending`, icon: Clock },
   { title: "Analytics (রিপোর্ট)", to: `${ADMIN_PATH}/dashboard/analytics`, icon: ChartColumn },
   { title: "Content (কনটেন্ট)", to: `${ADMIN_PATH}/dashboard/content`, icon: FileText },
   { title: "Preview Pages (পেজ)", to: `${ADMIN_PATH}/dashboard/pages`, icon: FileImage },

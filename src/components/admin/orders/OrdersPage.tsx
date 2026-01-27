@@ -68,6 +68,7 @@ export function OrdersPage() {
   const [notesDraft, setNotesDraft] = useState<string>("");
 
   const [confirmDeleteAllOpen, setConfirmDeleteAllOpen] = useState(false);
+  const [confirmDeleteSelectedOpen, setConfirmDeleteSelectedOpen] = useState(false);
 
   const { presets, addPreset, removePreset } = useOrdersPresets();
   const [presetName, setPresetName] = useState("");
@@ -201,6 +202,31 @@ export function OrdersPage() {
     },
   });
 
+  const deleteSelectedOrders = useMutation({
+    mutationFn: async () => {
+      const ids = Object.entries(selectedIds)
+        .filter(([, v]) => v)
+        .map(([k]) => k);
+      if (ids.length === 0) throw new Error("Select at least one order");
+
+      const { error } = await supabase.from("orders").delete().in("id", ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      setSelectedIds({});
+      setActiveOrder(null);
+      toast({ title: "Selected orders deleted" });
+    },
+    onError: (err: any) => {
+      toast({
+        title: "Delete failed",
+        description: err?.message ?? "Failed",
+        variant: "destructive",
+      });
+    },
+  });
+
   const downloadOrderEbook = async (order: any) => {
     const ebookId = order.ebook_file_id as string | null;
     if (!ebookId) {
@@ -293,6 +319,37 @@ export function OrdersPage() {
             <p className="text-sm text-muted-foreground">Quick filters + easy actions for admins.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <AlertDialog open={confirmDeleteSelectedOpen} onOpenChange={setConfirmDeleteSelectedOpen}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  disabled={deleteSelectedOrders.isPending || selectedCount === 0}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete selected
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete selected orders?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Selected {selectedCount} orders will be permanently deleted. This cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={deleteSelectedOrders.isPending}>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteSelectedOrders.mutate()}
+                    disabled={deleteSelectedOrders.isPending}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {deleteSelectedOrders.isPending ? "Deleting..." : "Yes, delete"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <AlertDialog open={confirmDeleteAllOpen} onOpenChange={setConfirmDeleteAllOpen}>
               <AlertDialogTrigger asChild>
                 <Button type="button" variant="destructive" disabled={deleteAllOrders.isPending || orders.length === 0}>

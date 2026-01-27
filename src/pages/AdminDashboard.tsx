@@ -13,6 +13,7 @@ import { AdminSettingsPage } from "@/components/admin/settings/AdminSettingsPage
 import { AdminAnalyticsPage } from "@/components/admin/analytics/AdminAnalyticsPage";
 import { AdminErrorScreen } from "@/components/admin/AdminErrorScreen";
 import { AdminLogsPage } from "@/components/admin/AdminLogsPage";
+import { PendingOrdersPage } from "@/components/admin/orders/PendingOrdersPage";
 import { LogOut } from "lucide-react";
 
 // Must match ADMIN_PATH in src/App.tsx
@@ -89,6 +90,7 @@ const AdminDashboard = () => {
  
   const title = useMemo(() => {
     const p = location.pathname;
+    if (p.includes("/pending")) return "Pending Orders";
     if (p.includes("/analytics")) return "Analytics";
     if (p.includes("/content")) return "Content";
     if (p.includes("/pages")) return "Preview Pages";
@@ -143,6 +145,7 @@ const AdminDashboard = () => {
     >
       <Routes>
         <Route index element={<OrdersPage />} />
+        <Route path="pending" element={<PendingOrdersPage />} />
         <Route path="analytics" element={<AdminAnalyticsPage />} />
         <Route path="content" element={<ContentPage />} />
         <Route path="pages" element={<PreviewPagesPage />} />
