@@ -49,17 +49,19 @@ function AdminShellInner({
       <AdminSidebar />
 
       <SidebarInset className="min-w-0 overflow-x-hidden">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-2 border-b bg-background/80 px-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-6">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-2 border-b-2 bg-background/80 px-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60 md:h-16 md:px-6">
           <div className="flex min-w-0 items-center gap-2">
             <SidebarTrigger />
             <div className="min-w-0">
-              <h1 className="truncate text-base font-semibold tracking-tight text-foreground md:text-lg">{title}</h1>
+              <h1 className="font-display truncate text-base font-semibold tracking-tight text-foreground md:text-lg">
+                {title}
+              </h1>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">{actions}</div>
         </header>
 
-        <div className="mx-auto w-full max-w-7xl overflow-x-hidden p-3 md:p-6">
+        <div className="mx-auto w-full max-w-7xl overflow-x-hidden p-3 md:p-5">
           <div className="animate-fade-in">{children}</div>
         </div>
       </SidebarInset>

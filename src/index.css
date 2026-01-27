@@ -1,6 +1,7 @@
 /* Bangla-friendly font (must be before any rules) */
 @import url("https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -44,6 +45,7 @@ All colors MUST be HSL.
 
     /* Typography */
     --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --font-display: Space Grotesk, Inter, ui-sans-serif, system-ui, sans-serif;
 
     --sidebar-background: 0 0% 98%;
 
@@ -103,18 +105,66 @@ All colors MUST be HSL.
 
   /* Admin-only theme (scoped via .admin-theme wrapper) */
   .admin-theme {
-    /* Slightly softer surface + more premium rounding for dashboard UI */
-    --radius: 0.75rem;
+    /* Neo‑brutal (pro/compact): crisp borders + rich but restrained surfaces */
+    --radius: 0.6rem;
 
-    /* Sidebar tokens (keep HSL) */
-    --sidebar-background: 210 45% 97%;
-    --sidebar-foreground: 210 25% 18%;
-    --sidebar-primary: 210 100% 50%;
+    /* Typography */
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    --font-display: Space Grotesk, Inter, ui-sans-serif, system-ui, sans-serif;
+
+    /* Core tokens (scoped: admin only) */
+    --background: 210 33% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Accent: vivid but not neon */
+    --primary: 222 88% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 28% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 28% 95%;
+    --muted-foreground: 215 16% 38%;
+
+    --accent: 222 88% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Rich “lower border” vibe = darker borders in admin */
+    --border: 222 20% 18%;
+    --input: 222 20% 18%;
+    --ring: 222 88% 55%;
+
+    /* Sidebar tokens */
+    --sidebar-background: 210 33% 98%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 88% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 55% 93%;
-    --sidebar-accent-foreground: 210 25% 15%;
-    --sidebar-border: 214 32% 90%;
-    --sidebar-ring: 210 100% 50%;
+    --sidebar-accent: 210 28% 94%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 222 20% 18%;
+    --sidebar-ring: 222 88% 55%;
+  }
+
+  /* Admin-only micro styling (keeps landing untouched) */
+  .admin-theme .shadow-sm {
+    box-shadow: 0 1px 0 hsl(var(--border) / 1), 0 10px 30px -18px hsl(var(--foreground) / 0.22);
+  }
+
+  .admin-theme .shadow-2xl {
+    box-shadow:
+      0 1px 0 hsl(var(--border) / 1),
+      0 22px 60px -28px hsl(var(--foreground) / 0.32);
+  }
+
+  .admin-theme .backdrop-blur {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
   }
 }
 

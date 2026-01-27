@@ -11,10 +11,10 @@ export function AdminErrorScreen({
   onRetry: () => void | Promise<void>;
 }) {
   return (
-    <div className="min-h-svh bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="admin-theme min-h-svh bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md border-2">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-xl tracking-tight">{title}</CardTitle>
+          <CardTitle className="font-display text-xl tracking-tight">{title}</CardTitle>
           {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
         </CardHeader>
         <CardContent className="flex flex-col gap-3">

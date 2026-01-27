@@ -132,12 +132,12 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
     }
  
     return (
-      <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full shadow-2xl">
+      <div className="admin-theme min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="max-w-md w-full border-2 shadow-2xl">
           <CardHeader className="space-y-2">
             <div className="text-center">
               <div className="text-sm font-medium text-muted-foreground">Home Doctor</div>
-              <CardTitle className="text-center text-2xl tracking-tight">Admin Login</CardTitle>
+              <CardTitle className="font-display text-center text-2xl tracking-tight">Admin Login</CardTitle>
             </div>
           </CardHeader>
           <CardContent>

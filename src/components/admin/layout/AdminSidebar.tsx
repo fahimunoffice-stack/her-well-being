@@ -46,15 +46,18 @@ export function AdminSidebar() {
     end ? location.pathname === to : location.pathname.startsWith(to);
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible="icon">
-      <SidebarHeader className="border-b px-3 py-3">
+    <Sidebar
+      className={collapsed ? "w-14 border-r-2" : "w-60 border-r-2"}
+      collapsible="icon"
+    >
+      <SidebarHeader className="border-b-2 px-3 py-3">
         <div className="flex items-center gap-2">
           <div className="grid h-9 w-9 place-items-center rounded-lg bg-sidebar-accent text-sidebar-accent-foreground">
-            <span className="text-sm font-semibold">HD</span>
+            <span className="font-display text-sm font-semibold">HD</span>
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <div className="truncate text-sm font-semibold text-sidebar-foreground">Home Doctor</div>
+              <div className="font-display truncate text-sm font-semibold text-sidebar-foreground">Home Doctor</div>
               <div className="truncate text-xs text-muted-foreground">Admin Dashboard</div>
             </div>
           )}
@@ -76,8 +79,8 @@ export function AdminSidebar() {
                       <NavLink
                         to={item.to}
                         end={item.end}
-                        className="gap-2 rounded-md px-2.5 py-2 hover:bg-sidebar-accent"
-                        activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                        className="gap-2 rounded-md border-l-4 border-transparent px-2.5 py-2 hover:bg-sidebar-accent"
+                        activeClassName="bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-primary font-medium"
                       >
                         <item.icon className="h-4 w-4" />
                         {!collapsed && <span>{item.title}</span>}

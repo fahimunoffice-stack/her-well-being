@@ -14,6 +14,17 @@ export default {
   	},
   	extend: {
   		fontFamily: {
+				display: [
+					'var(--font-display)',
+					'Inter',
+					'ui-sans-serif',
+					'system-ui',
+					'sans-serif',
+					'Apple Color Emoji',
+					'Segoe UI Emoji',
+					'Segoe UI Symbol',
+					'Noto Color Emoji'
+				],
   			sans: [
   				'Inter',
   				'ui-sans-serif',
