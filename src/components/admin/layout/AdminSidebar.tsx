@@ -22,14 +22,17 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+// Must match ADMIN_PATH in src/App.tsx
+const ADMIN_PATH = "/hd-admin-7f3c9a";
+
 const navItems = [
-  { title: "Orders", to: "/admin/dashboard", icon: ShoppingCart, end: true },
-  { title: "Analytics", to: "/admin/dashboard/analytics", icon: ChartColumn },
-  { title: "Content", to: "/admin/dashboard/content", icon: FileText },
-  { title: "Preview Pages", to: "/admin/dashboard/pages", icon: FileImage },
-  { title: "Media", to: "/admin/dashboard/media", icon: LayoutDashboard },
-  { title: "Ebooks", to: "/admin/dashboard/ebooks", icon: Book },
-  { title: "Settings", to: "/admin/dashboard/settings", icon: Settings },
+  { title: "Orders", to: `${ADMIN_PATH}/dashboard`, icon: ShoppingCart, end: true },
+  { title: "Analytics", to: `${ADMIN_PATH}/dashboard/analytics`, icon: ChartColumn },
+  { title: "Content", to: `${ADMIN_PATH}/dashboard/content`, icon: FileText },
+  { title: "Preview Pages", to: `${ADMIN_PATH}/dashboard/pages`, icon: FileImage },
+  { title: "Media", to: `${ADMIN_PATH}/dashboard/media`, icon: LayoutDashboard },
+  { title: "Ebooks", to: `${ADMIN_PATH}/dashboard/ebooks`, icon: Book },
+  { title: "Settings", to: `${ADMIN_PATH}/dashboard/settings`, icon: Settings },
 ];
 
 export function AdminSidebar() {

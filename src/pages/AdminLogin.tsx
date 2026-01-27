@@ -7,6 +7,9 @@
  import { Button } from "@/components/ui/button";
  import { useToast } from "@/hooks/use-toast";
  import { z } from "zod";
+
+// Must match ADMIN_PATH in src/App.tsx
+const ADMIN_PATH = "/hd-admin-7f3c9a";
  
  const loginSchema = z.object({
    email: z.string().trim().email("সঠিক ইমেইল লিখুন"),
@@ -32,7 +35,7 @@
            .eq("user_id", session.user.id);
          
          if (roles?.some(r => r.role === "admin")) {
-           navigate("/admin/dashboard");
+            navigate(`${ADMIN_PATH}/dashboard`);
          }
        }
        setLoading(false);
@@ -49,7 +52,7 @@
              .eq("user_id", session.user.id);
            
            if (roles?.some(r => r.role === "admin")) {
-             navigate("/admin/dashboard");
+              navigate(`${ADMIN_PATH}/dashboard`);
            }
          }
          setUser(session?.user ?? null);

@@ -11,6 +11,10 @@ import AdminDashboard from "./pages/AdminDashboard";
  import AdminSetup from "./pages/AdminSetup";
 import { MetaPixel } from "@/components/tracking/MetaPixel";
 
+// NOTE: Admin panel is intentionally hidden behind a non-guessable path.
+// If you want to change it later, update this constant.
+const ADMIN_PATH = "/hd-admin-7f3c9a";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -23,9 +27,10 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/order" element={<Order />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard/*" element={<AdminDashboard />} />
-           <Route path="/admin/setup" element={<AdminSetup />} />
+          {/* Hidden admin routes */}
+          <Route path={ADMIN_PATH} element={<AdminLogin />} />
+          <Route path={`${ADMIN_PATH}/dashboard/*`} element={<AdminDashboard />} />
+          <Route path={`${ADMIN_PATH}/setup`} element={<AdminSetup />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
