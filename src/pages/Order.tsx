@@ -38,6 +38,8 @@ import { useKeyboardInset } from "@/hooks/useKeyboardInset";
       }
     }, 50);
   }, []);
+
+  const inputClassName = "h-12 text-base";
  
    const { data: content } = useQuery({
      queryKey: ["site-content"],
@@ -131,7 +133,7 @@ import { useKeyboardInset } from "@/hooks/useKeyboardInset";
  
     return (
        <div
-        className="min-h-svh bg-gradient-to-b from-secondary to-background py-8 md:py-12 px-4"
+         className="min-h-svh bg-gradient-to-b from-secondary to-background py-6 md:py-12 px-4"
         style={{ paddingBottom: keyboardInset ? keyboardInset + 24 : undefined }}
       >
        <div className="container mx-auto max-w-lg">
@@ -177,6 +179,8 @@ import { useKeyboardInset } from "@/hooks/useKeyboardInset";
                    value={formData.name}
                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     onFocus={scrollFocusedIntoView}
+                    className={inputClassName}
+                    autoComplete="name"
                    required
                  />
                </div>
@@ -190,6 +194,10 @@ import { useKeyboardInset } from "@/hooks/useKeyboardInset";
                    value={formData.mobile}
                    onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
                     onFocus={scrollFocusedIntoView}
+                    className={inputClassName}
+                    inputMode="tel"
+                    autoComplete="tel"
+                    enterKeyHint="next"
                    required
                  />
                </div>
@@ -203,13 +211,17 @@ import { useKeyboardInset } from "@/hooks/useKeyboardInset";
                    value={formData.sender_bkash}
                    onChange={(e) => setFormData({ ...formData, sender_bkash: e.target.value })}
                     onFocus={scrollFocusedIntoView}
+                    className={inputClassName}
+                    inputMode="tel"
+                    autoComplete="tel"
+                    enterKeyHint="done"
                    required
                  />
                </div>
  
                <Button
                  type="submit"
-                  className="w-full text-base md:text-lg py-5 md:py-6"
+                  className="w-full text-base md:text-lg py-5 md:py-6 touch-manipulation"
                  disabled={submitOrder.isPending}
                >
                  {submitOrder.isPending ? "সাবমিট হচ্ছে..." : "Submit"}
