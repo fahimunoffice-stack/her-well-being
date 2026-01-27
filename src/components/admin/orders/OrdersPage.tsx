@@ -42,6 +42,16 @@ import { BookmarkPlus, Download, Filter, Trash2 } from "lucide-react";
 
 type Status = "pending" | "confirmed" | "rejected";
 
+function statusVariant(status: Status) {
+  return status === "confirmed" ? "default" : status === "rejected" ? "destructive" : "secondary";
+}
+
+function statusLabelBn(status: Status) {
+  if (status === "pending") return "Pending (পেন্ডিং)";
+  if (status === "confirmed") return "Confirmed (কনফার্ম)";
+  return "Rejected (রিজেক্ট)";
+}
+
 export function OrdersPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -279,8 +289,8 @@ export function OrdersPage() {
       <Card className="shadow-sm">
         <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <CardTitle className="tracking-tight">Orders</CardTitle>
-            <p className="text-sm text-muted-foreground">Search, filter, bulk update, export.</p>
+            <CardTitle className="tracking-tight">Orders (অর্ডার)</CardTitle>
+            <p className="text-sm text-muted-foreground">Quick filters + easy actions for admins.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <AlertDialog open={confirmDeleteAllOpen} onOpenChange={setConfirmDeleteAllOpen}>
@@ -316,22 +326,53 @@ export function OrdersPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Quick filters (mobile-friendly) */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant={statusFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("all")}
+            >
+              All (সব)
+              <span className="ml-2 rounded-full bg-background/20 px-2 py-0.5 text-[11px]">{kpis.total}</span>
+            </Button>
+            <Button
+              type="button"
+              variant={statusFilter === "pending" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("pending")}
+            >
+              Pending (পেন্ডিং)
+              <span className="ml-2 rounded-full bg-background/20 px-2 py-0.5 text-[11px]">{kpis.pending}</span>
+            </Button>
+            <Button
+              type="button"
+              variant={statusFilter === "confirmed" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("confirmed")}
+            >
+              Confirmed (কনফার্ম)
+              <span className="ml-2 rounded-full bg-background/20 px-2 py-0.5 text-[11px]">{kpis.confirmed}</span>
+            </Button>
+          </div>
+
           <div className="grid gap-4 lg:grid-cols-12">
             <div className="space-y-2 lg:col-span-5">
-              <Label>Search</Label>
+              <Label>Search (খুঁজুন)</Label>
               <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="name / mobile / sender" />
             </div>
             <div className="space-y-2 lg:col-span-3">
-              <Label>Status</Label>
+              <Label>Status (স্ট্যাটাস)</Label>
               <Select value={statusFilter} onValueChange={(v: any) => setStatusFilter(v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="confirmed">Confirmed</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
+                  <SelectItem value="all">All (সব)</SelectItem>
+                  <SelectItem value="pending">Pending (পেন্ডিং)</SelectItem>
+                  <SelectItem value="confirmed">Confirmed (কনফার্ম)</SelectItem>
+                  <SelectItem value="rejected">Rejected (রিজেক্ট)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -362,34 +403,34 @@ export function OrdersPage() {
 
           <div className="grid gap-4 lg:grid-cols-12">
             <div className="space-y-2 lg:col-span-3">
-              <Label>From</Label>
+              <Label>From (শুরুর তারিখ)</Label>
               <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
             </div>
             <div className="space-y-2 lg:col-span-3">
-              <Label>To</Label>
+              <Label>To (শেষ তারিখ)</Label>
               <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
             </div>
             <div className="space-y-2 lg:col-span-3">
-              <Label>Bulk status</Label>
+              <Label>Bulk status (একসাথে)</Label>
               <Select value={bulkStatus} onValueChange={(v: any) => setBulkStatus(v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Bulk status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="confirmed">Confirm</SelectItem>
-                  <SelectItem value="rejected">Reject</SelectItem>
-                  <SelectItem value="pending">Set pending</SelectItem>
+                  <SelectItem value="confirmed">Confirm (কনফার্ম)</SelectItem>
+                  <SelectItem value="rejected">Reject (রিজেক্ট)</SelectItem>
+                  <SelectItem value="pending">Set pending (পেন্ডিং)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2 lg:col-span-3">
-              <Label>Bulk ebook</Label>
+              <Label>Bulk ebook (বই)</Label>
               <Select value={bulkEbookId || "none"} onValueChange={(v) => setBulkEbookId(v === "none" ? "" : v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select ebook" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No change</SelectItem>
+                  <SelectItem value="none">No change (পরিবর্তন নয়)</SelectItem>
                   {(ebookFiles ?? []).map((e: any) => (
                     <SelectItem key={e.id} value={e.id}>
                       {e.title}
@@ -491,15 +532,9 @@ export function OrdersPage() {
 
                   <div className="shrink-0 flex flex-col items-end gap-2">
                     <Badge
-                      variant={
-                        order.status === "confirmed"
-                          ? "default"
-                          : order.status === "rejected"
-                            ? "destructive"
-                            : "secondary"
-                      }
+                      variant={statusVariant(order.status)}
                     >
-                      {order.status}
+                      {statusLabelBn(order.status)}
                     </Badge>
                     <span className="text-[11px] text-muted-foreground">
                       {new Date(order.created_at).toLocaleDateString("bn-BD")}
@@ -510,21 +545,26 @@ export function OrdersPage() {
                 <div className="mt-3 flex flex-wrap items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                   {order.status === "pending" ? (
                     <>
-                      <Button size="sm" onClick={() => updateOrderStatus.mutate({ id: order.id, status: "confirmed" })}>
-                        Confirm
+                      <Button
+                        size="lg"
+                        className="h-12"
+                        onClick={() => updateOrderStatus.mutate({ id: order.id, status: "confirmed" })}
+                      >
+                        Confirm (কনফার্ম)
                       </Button>
                       <Button
-                        size="sm"
+                        size="lg"
+                        className="h-12"
                         variant="destructive"
                         onClick={() => updateOrderStatus.mutate({ id: order.id, status: "rejected" })}
                       >
-                        Reject
+                        Reject (রিজেক্ট)
                       </Button>
                     </>
                   ) : null}
                   {order.status === "confirmed" ? (
-                    <Button size="sm" variant="outline" onClick={() => downloadOrderEbook(order)}>
-                      Download
+                    <Button size="lg" className="h-12" variant="outline" onClick={() => downloadOrderEbook(order)}>
+                      Download (ডাউনলোড)
                     </Button>
                   ) : null}
                 </div>
@@ -568,15 +608,9 @@ export function OrdersPage() {
                       <TableCell>{order.sender_bkash}</TableCell>
                       <TableCell>
                         <Badge
-                          variant={
-                            order.status === "confirmed"
-                              ? "default"
-                              : order.status === "rejected"
-                                ? "destructive"
-                                : "secondary"
-                          }
+                          variant={statusVariant(order.status)}
                         >
-                          {order.status}
+                          {statusLabelBn(order.status)}
                         </Badge>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
@@ -592,10 +626,12 @@ export function OrdersPage() {
                           disabled={order.status !== "confirmed"}
                         >
                           <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder={order.status === "confirmed" ? "Select ebook" : "Confirm first"} />
+                            <SelectValue
+                              placeholder={order.status === "confirmed" ? "Select ebook (বই)" : "Confirm first (আগে কনফার্ম)"}
+                            />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="none">Not set</SelectItem>
+                            <SelectItem value="none">Not set (নেই)</SelectItem>
                             {(ebookFiles ?? []).map((e: any) => (
                               <SelectItem key={e.id} value={e.id}>
                                 {e.title}
@@ -608,17 +644,17 @@ export function OrdersPage() {
                         <div className="inline-flex flex-wrap justify-end gap-2">
                           {order.status === "pending" ? (
                             <>
-                              <Button size="sm" onClick={() => updateOrderStatus.mutate({ id: order.id, status: "confirmed" })}>
-                                Confirm
+                              <Button size="sm" className="min-h-10" onClick={() => updateOrderStatus.mutate({ id: order.id, status: "confirmed" })}>
+                                Confirm (কনফার্ম)
                               </Button>
-                              <Button size="sm" variant="destructive" onClick={() => updateOrderStatus.mutate({ id: order.id, status: "rejected" })}>
-                                Reject
+                              <Button size="sm" className="min-h-10" variant="destructive" onClick={() => updateOrderStatus.mutate({ id: order.id, status: "rejected" })}>
+                                Reject (রিজেক্ট)
                               </Button>
                             </>
                           ) : null}
                           {order.status === "confirmed" ? (
                             <Button size="sm" variant="outline" onClick={() => downloadOrderEbook(order)}>
-                              Download
+                              Download (ডাউনলোড)
                             </Button>
                           ) : null}
                         </div>
@@ -662,15 +698,9 @@ export function OrdersPage() {
 
               <div className="flex flex-wrap items-center gap-2">
                 <Badge
-                  variant={
-                    activeOrder.status === "confirmed"
-                      ? "default"
-                      : activeOrder.status === "rejected"
-                        ? "destructive"
-                        : "secondary"
-                  }
+                  variant={statusVariant(activeOrder.status)}
                 >
-                  {activeOrder.status}
+                  {statusLabelBn(activeOrder.status)}
                 </Badge>
                 <Badge variant="outline">
                   {new Date(activeOrder.created_at).toLocaleString("bn-BD")}
@@ -701,16 +731,20 @@ export function OrdersPage() {
                   type="button"
                   onClick={() => updateOrderStatus.mutate({ id: activeOrder.id, status: "confirmed" })}
                   disabled={activeOrder.status === "confirmed"}
+                  size="lg"
+                  className="h-12 flex-1"
                 >
-                  Confirm
+                  Confirm (কনফার্ম)
                 </Button>
                 <Button
                   type="button"
                   variant="destructive"
                   onClick={() => updateOrderStatus.mutate({ id: activeOrder.id, status: "rejected" })}
                   disabled={activeOrder.status === "rejected"}
+                  size="lg"
+                  className="h-12 flex-1"
                 >
-                  Reject
+                  Reject (রিজেক্ট)
                 </Button>
                 <Button
                   type="button"
@@ -719,12 +753,14 @@ export function OrdersPage() {
                     updateOrderStatus.mutate({ id: activeOrder.id, status: "pending" });
                   }}
                   disabled={activeOrder.status === "pending"}
+                  size="lg"
+                  className="h-12 w-full sm:w-auto"
                 >
-                  Set pending
+                  Set pending (পেন্ডিং)
                 </Button>
                 {activeOrder.status === "confirmed" ? (
-                  <Button type="button" variant="outline" onClick={() => downloadOrderEbook(activeOrder)}>
-                    Download ebook
+                  <Button type="button" size="lg" className="h-12 w-full sm:w-auto" variant="outline" onClick={() => downloadOrderEbook(activeOrder)}>
+                    Download ebook (ডাউনলোড)
                   </Button>
                 ) : null}
               </div>
