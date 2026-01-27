@@ -105,7 +105,7 @@ All colors MUST be HSL.
 
   /* Admin-only theme (scoped via .admin-theme wrapper) */
   .admin-theme {
-    /* Neo‑brutal (pro/compact): crisp borders + rich but restrained surfaces */
+    /* Default admin theme (keeps site/landing untouched) */
     --radius: 0.6rem;
 
     /* Typography */
@@ -113,16 +113,47 @@ All colors MUST be HSL.
     --font-display: Space Grotesk, Inter, ui-sans-serif, system-ui, sans-serif;
 
     /* Core tokens (scoped: admin only) */
+    --background: 0 0% 100%;
+    --foreground: 210 100% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 100% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 100% 15%;
+
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 100% 95%;
+    --secondary-foreground: 210 100% 20%;
+
+    --muted: 210 60% 97%;
+    --muted-foreground: 210 30% 45%;
+
+    --accent: 210 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    /* Sidebar tokens (keep HSL) */
+    --sidebar-background: 210 45% 97%;
+    --sidebar-foreground: 210 25% 18%;
+    --sidebar-primary: 210 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 55% 93%;
+    --sidebar-accent-foreground: 210 25% 15%;
+    --sidebar-border: 214 32% 90%;
+    --sidebar-ring: 210 100% 50%;
+  }
+
+  /* Neo‑brutal variant (toggle via data attribute) */
+  .admin-theme[data-admin-theme="neo"] {
     --background: 210 33% 98%;
     --foreground: 222 47% 11%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-
-    /* Accent: vivid but not neon */
     --primary: 222 88% 55%;
     --primary-foreground: 0 0% 100%;
 
@@ -140,7 +171,6 @@ All colors MUST be HSL.
     --input: 222 20% 18%;
     --ring: 222 88% 55%;
 
-    /* Sidebar tokens */
     --sidebar-background: 210 33% 98%;
     --sidebar-foreground: 222 47% 11%;
     --sidebar-primary: 222 88% 55%;
@@ -151,12 +181,12 @@ All colors MUST be HSL.
     --sidebar-ring: 222 88% 55%;
   }
 
-  /* Admin-only micro styling (keeps landing untouched) */
-  .admin-theme .shadow-sm {
+  /* Admin-only micro styling (neo variant only) */
+  .admin-theme[data-admin-theme="neo"] .shadow-sm {
     box-shadow: 0 1px 0 hsl(var(--border) / 1), 0 10px 30px -18px hsl(var(--foreground) / 0.22);
   }
 
-  .admin-theme .shadow-2xl {
+  .admin-theme[data-admin-theme="neo"] .shadow-2xl {
     box-shadow:
       0 1px 0 hsl(var(--border) / 1),
       0 22px 60px -28px hsl(var(--foreground) / 0.32);
