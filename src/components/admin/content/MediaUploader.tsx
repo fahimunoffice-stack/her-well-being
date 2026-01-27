@@ -17,6 +17,18 @@ type MediaItem = {
   metadata?: any;
 };
 
+function extFromMime(mime?: string) {
+  const m = (mime ?? "").toLowerCase();
+  if (m === "image/jpeg" || m === "image/jpg") return "jpg";
+  if (m === "image/png") return "png";
+  if (m === "image/webp") return "webp";
+  if (m === "image/gif") return "gif";
+  if (m === "video/mp4") return "mp4";
+  if (m === "video/webm") return "webm";
+  if (m === "video/quicktime") return "mov";
+  return "bin";
+}
+
 function isImage(name: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
 }
@@ -64,7 +76,8 @@ export function MediaUploader({
 
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop();
+      const rawExt = file.name.includes(".") ? file.name.split(".").pop() : "";
+      const ext = (rawExt && rawExt.length <= 8 ? rawExt : "") || extFromMime(file.type);
       const path = `media/${crypto.randomUUID()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
@@ -102,6 +115,18 @@ export function MediaUploader({
 
   const acceptsImages = /image\//i.test(accept) || /\bimage\b/i.test(accept);
   const acceptsVideos = /video\//i.test(accept) || /\bvideo\b/i.test(accept);
+
+  const previewKind = useMemo<"image" | "video" | null>(() => {
+    if (!currentUrl) return null;
+    // Prefer accept-based detection (works even when filenames have no extension)
+    if (acceptsImages && !acceptsVideos) return "image";
+    if (acceptsVideos && !acceptsImages) return "video";
+
+    // Fallback: extension detection from URL
+    if (currentUrl.match(/\.(jpg|jpeg|png|gif|webp)(\?|#|$)/i)) return "image";
+    if (currentUrl.match(/\.(mp4|webm|mov)(\?|#|$)/i)) return "video";
+    return null;
+  }, [currentUrl, acceptsImages, acceptsVideos]);
 
   const { data: libraryItems, isFetching: isLibraryFetching, refetch: refetchLibrary } = useQuery({
     queryKey: ["media-library-picker", accept],
@@ -141,10 +166,10 @@ export function MediaUploader({
       {currentUrl && (
         <Card className="p-3 relative">
           <div className="flex items-start gap-3">
-            {currentUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-              <img src={currentUrl} alt="Preview" className="w-32 h-32 object-cover rounded" />
-            ) : currentUrl.match(/\.(mp4|webm|mov)$/i) ? (
-              <video src={currentUrl} className="w-32 h-32 object-cover rounded" controls />
+            {previewKind === "image" ? (
+              <img src={currentUrl} alt="Preview" className="w-32 h-32 object-contain rounded bg-muted" />
+            ) : previewKind === "video" ? (
+              <video src={currentUrl} className="w-32 h-32 object-contain rounded bg-muted" controls />
             ) : null}
             <div className="flex-1 text-sm text-muted-foreground break-all">
               {isStoragePath ? "Uploaded file" : currentUrl}
