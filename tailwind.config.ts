@@ -25,8 +25,9 @@ export default {
 					'Segoe UI Symbol',
 					'Noto Color Emoji'
 				],
-  			sans: [
-  				'Inter',
+				sans: [
+					'var(--font-sans)',
+					'Inter',
   				'ui-sans-serif',
   				'system-ui',
   				'sans-serif',
