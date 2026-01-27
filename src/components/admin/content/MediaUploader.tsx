@@ -29,6 +29,61 @@ function extFromMime(mime?: string) {
   return "bin";
 }
 
+async function sniffMimeFromFile(file: File): Promise<{ mime: string; ext: string } | null> {
+  // Best-effort signature detection for files that arrive without proper type/extension (common on mobile share apps)
+  try {
+    const buf = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+
+    // JPEG: FF D8 FF
+    if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return { mime: "image/jpeg", ext: "jpg" };
+
+    // PNG: 89 50 4E 47 0D 0A 1A 0A
+    if (
+      buf[0] === 0x89 &&
+      buf[1] === 0x50 &&
+      buf[2] === 0x4e &&
+      buf[3] === 0x47 &&
+      buf[4] === 0x0d &&
+      buf[5] === 0x0a &&
+      buf[6] === 0x1a &&
+      buf[7] === 0x0a
+    )
+      return { mime: "image/png", ext: "png" };
+
+    // GIF: GIF87a / GIF89a
+    const head6 = String.fromCharCode(...buf.slice(0, 6));
+    if (head6 === "GIF87a" || head6 === "GIF89a") return { mime: "image/gif", ext: "gif" };
+
+    // WEBP: RIFF....WEBP
+    const head4 = String.fromCharCode(...buf.slice(0, 4));
+    const tail4 = String.fromCharCode(...buf.slice(8, 12));
+    if (head4 === "RIFF" && tail4 === "WEBP") return { mime: "image/webp", ext: "webp" };
+
+    // MP4: ....ftyp
+    const box = String.fromCharCode(...buf.slice(4, 8));
+    if (box === "ftyp") return { mime: "video/mp4", ext: "mp4" };
+
+    // Fallback: try to infer from filename mime
+    const inferredExt = (file.name.includes(".") ? file.name.split(".").pop() : "") ?? "";
+    const inferred = extFromMime(file.type);
+    // tiny debug hint (kept internal)
+    if (inferredExt) {
+      const e = inferredExt.toLowerCase();
+      if (["jpg", "jpeg"].includes(e)) return { mime: "image/jpeg", ext: "jpg" };
+      if (e === "png") return { mime: "image/png", ext: "png" };
+      if (e === "webp") return { mime: "image/webp", ext: "webp" };
+      if (e === "gif") return { mime: "image/gif", ext: "gif" };
+      if (e === "mp4") return { mime: "video/mp4", ext: "mp4" };
+      if (e === "webm") return { mime: "video/webm", ext: "webm" };
+      if (e === "mov") return { mime: "video/quicktime", ext: "mov" };
+    }
+    if (inferred && inferred !== "bin") return { mime: file.type || "application/octet-stream", ext: inferred };
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function isImage(name: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
 }
@@ -76,14 +131,20 @@ export function MediaUploader({
 
     setUploading(true);
     try {
+      const signature = await sniffMimeFromFile(file);
+
       const rawExt = file.name.includes(".") ? file.name.split(".").pop() : "";
-      const ext = (rawExt && rawExt.length <= 8 ? rawExt : "") || extFromMime(file.type);
+      const safeRawExt = rawExt && rawExt.length <= 8 ? rawExt : "";
+      const ext = (safeRawExt || signature?.ext || extFromMime(file.type)).toLowerCase();
+
+      // Prefer accurate mime; fallback to file.type; lastly octet-stream.
+      const contentType = signature?.mime || file.type || "application/octet-stream";
       const path = `media/${crypto.randomUUID()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from("media")
         .upload(path, file, {
-          contentType: file.type,
+          contentType,
           upsert: false,
         });
 
