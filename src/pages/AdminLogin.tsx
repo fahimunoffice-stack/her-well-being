@@ -26,36 +26,62 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
    useEffect(() => {
      // Check existing session
      const checkAuth = async () => {
-       const { data: { session } } = await supabase.auth.getSession();
-       if (session?.user) {
-         // Check if user is admin
-         const { data: roles } = await supabase
-           .from("user_roles")
-           .select("role")
-           .eq("user_id", session.user.id);
-         
-         if (roles?.some(r => r.role === "admin")) {
-            navigate(`${ADMIN_PATH}/dashboard`);
-         }
-       }
-       setLoading(false);
+        try {
+          const {
+            data: { session },
+            error: sessionError,
+          } = await supabase.auth.getSession();
+
+          if (sessionError) throw sessionError;
+
+          if (session?.user) {
+            // Check if user is admin
+            const { data: roles, error: rolesError } = await supabase
+              .from("user_roles")
+              .select("role")
+              .eq("user_id", session.user.id);
+
+            if (rolesError) throw rolesError;
+
+            if (roles?.some((r) => r.role === "admin")) {
+              navigate(`${ADMIN_PATH}/dashboard`);
+              return;
+            }
+          }
+        } catch (err: any) {
+          // Ensure we never get stuck on the loading screen
+          console.error("AdminLogin checkAuth failed", err);
+          toast({
+            title: "লোডিং সমস্যা",
+            description: "সেশন লোড করা যাচ্ছে না—অনুগ্রহ করে রিফ্রেশ করে আবার চেষ্টা করুন।",
+            variant: "destructive",
+          });
+        } finally {
+          setLoading(false);
+        }
      };
      checkAuth();
  
      // Listen to auth changes
      const { data: { subscription } } = supabase.auth.onAuthStateChange(
        async (event, session) => {
-         if (session?.user) {
-           const { data: roles } = await supabase
-             .from("user_roles")
-             .select("role")
-             .eq("user_id", session.user.id);
-           
-           if (roles?.some(r => r.role === "admin")) {
-              navigate(`${ADMIN_PATH}/dashboard`);
-           }
-         }
-         setUser(session?.user ?? null);
+          try {
+            if (session?.user) {
+              const { data: roles, error: rolesError } = await supabase
+                .from("user_roles")
+                .select("role")
+                .eq("user_id", session.user.id);
+
+              if (rolesError) throw rolesError;
+
+              if (roles?.some((r) => r.role === "admin")) {
+                navigate(`${ADMIN_PATH}/dashboard`);
+              }
+            }
+            setUser(session?.user ?? null);
+          } catch (err) {
+            console.error("AdminLogin onAuthStateChange failed", err);
+          }
        }
      );
  
