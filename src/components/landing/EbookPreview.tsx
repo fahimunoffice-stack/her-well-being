@@ -66,9 +66,7 @@ import { supabase } from "@/integrations/supabase/client";
             ) : null}
           </div>
 
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            (অ্যাডমিন প্যানেল থেকে ই-বুকের পৃষ্ঠা আপলোড করুন)
-          </p>
+          {/* Intentionally no admin-facing instruction text on public page */}
        </div>
      </section>
    );
