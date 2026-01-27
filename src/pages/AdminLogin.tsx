@@ -20,71 +20,63 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
  const AdminLogin = () => {
    const navigate = useNavigate();
    const { toast } = useToast();
-   const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<any>(null);
+    const [session, setSession] = useState<any>(null);
    const [loading, setLoading] = useState(true);
     const [authError, setAuthError] = useState<string | null>(null);
    const [formData, setFormData] = useState({ email: "", password: "" });
  
-    const checkAuth = async () => {
+    const checkAuth = async (s: any) => {
       setLoading(true);
       setAuthError(null);
       try {
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
+        const currentSession = s ?? (await supabase.auth.getSession()).data.session;
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
 
-        if (sessionError) throw sessionError;
+        if (!currentSession?.user) return;
 
-        if (session?.user) {
-          const { data: roles, error: rolesError } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", session.user.id);
+        // IMPORTANT: use backend role check (more reliable than selecting user_roles on all devices)
+        const { data: isAdmin, error: roleError } = await supabase.rpc("has_role", {
+          _user_id: currentSession.user.id,
+          _role: "admin",
+        });
+        if (roleError) throw roleError;
 
-          if (rolesError) throw rolesError;
-
-          if (roles?.some((r) => r.role === "admin")) {
-            navigate(`${ADMIN_PATH}/dashboard`);
-            return;
-          }
+        if (isAdmin) {
+          navigate(`${ADMIN_PATH}/dashboard`);
+          return;
         }
       } catch (err: any) {
         console.error("AdminLogin checkAuth failed", err);
-        setAuthError("সেশন/ব্যাকএন্ড লোড করতে সমস্যা হচ্ছে।");
+        setAuthError(
+          err?.message
+            ? `সেশন/ব্যাকএন্ড লোড করতে সমস্যা হচ্ছে। (${err.message})`
+            : "সেশন/ব্যাকএন্ড লোড করতে সমস্যা হচ্ছে।"
+        );
       } finally {
         setLoading(false);
       }
     };
 
     useEffect(() => {
-      checkAuth();
- 
-     // Listen to auth changes
-     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-       async (event, session) => {
-          try {
-            if (session?.user) {
-              const { data: roles, error: rolesError } = await supabase
-                .from("user_roles")
-                .select("role")
-                .eq("user_id", session.user.id);
+      // Listen to auth changes (MUST be synchronous)
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+        setSession(nextSession);
+        setUser(nextSession?.user ?? null);
+        // Defer any Supabase calls
+        setTimeout(() => {
+          checkAuth(nextSession);
+        }, 0);
+      });
 
-              if (rolesError) throw rolesError;
+      // Initial load
+      checkAuth(null);
 
-              if (roles?.some((r) => r.role === "admin")) {
-                navigate(`${ADMIN_PATH}/dashboard`);
-              }
-            }
-            setUser(session?.user ?? null);
-          } catch (err) {
-            console.error("AdminLogin onAuthStateChange failed", err);
-          }
-       }
-     );
- 
-     return () => subscription.unsubscribe();
-   }, [navigate]);
+      return () => subscription.unsubscribe();
+    }, [navigate]);
  
    const handleLogin = async (e: React.FormEvent) => {
      e.preventDefault();
@@ -122,11 +114,11 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
 
     if (authError) {
       // Dedicated error screen (instead of only toast)
-      return (
+         return (
         <AdminErrorScreen
           title="Admin session load failed"
           description={authError}
-          onRetry={checkAuth}
+            onRetry={() => checkAuth(session)}
         />
       );
     }
