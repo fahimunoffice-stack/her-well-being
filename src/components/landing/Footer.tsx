@@ -36,8 +36,7 @@ export function Footer() {
           </div>
 
           <div className="text-center text-xs text-muted-foreground">
-            Client project · Developed by <span className="font-medium text-foreground">Vibe Tech</span> · Developer:
-            <span className="font-medium text-foreground"> Tasin</span>
+            Developed by <span className="font-medium text-foreground">Vibe Tech</span>
           </div>
         </div>
       </div>
