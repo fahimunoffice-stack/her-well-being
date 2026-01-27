@@ -23,63 +23,68 @@ const AdminDashboard = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
  
-  useEffect(() => {
-    const checkAuth = async () => {
-      setLoading(true);
-      setAuthError(null);
-      try {
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
+  const checkAuth = async (s: any) => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      const currentSession = s ?? (await supabase.auth.getSession()).data.session;
+      setSession(currentSession);
 
-        if (sessionError) throw sessionError;
-
-        if (!session?.user) {
-          navigate(ADMIN_PATH);
-          return;
-        }
-
-        const { data: roles, error: rolesError } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", session.user.id);
-
-        if (rolesError) throw rolesError;
-
-        if (!roles?.some((r) => r.role === "admin")) {
-          toast({
-            title: "Access Denied",
-            description: "You don't have admin privileges",
-            variant: "destructive",
-          });
-          navigate("/");
-          return;
-        }
-
-        setUser(session.user);
-        setIsAdmin(true);
-      } catch (err) {
-        console.error("AdminDashboard checkAuth failed", err);
-        setAuthError("সেশন/ব্যাকএন্ড লোড করতে সমস্যা হচ্ছে।");
-      } finally {
-        setLoading(false);
+      if (!currentSession?.user) {
+        navigate(ADMIN_PATH);
+        return;
       }
-    };
 
-    checkAuth();
+      const { data: isAdminNow, error: roleError } = await supabase.rpc("has_role", {
+        _user_id: currentSession.user.id,
+        _role: "admin",
+      });
+      if (roleError) throw roleError;
 
+      if (!isAdminNow) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have admin privileges",
+          variant: "destructive",
+        });
+        navigate("/");
+        return;
+      }
+
+      setUser(currentSession.user);
+      setIsAdmin(true);
+    } catch (err: any) {
+      console.error("AdminDashboard checkAuth failed", err);
+      setAuthError(
+        err?.message
+          ? `সেশন/ব্যাকএন্ড লোড করতে সমস্যা হচ্ছে। (${err.message})`
+          : "সেশন/ব্যাকএন্ড লোড করতে সমস্যা হচ্ছে।"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!session?.user) navigate(ADMIN_PATH);
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      // Defer any Supabase calls
+      setTimeout(() => {
+        checkAuth(nextSession);
+      }, 0);
     });
 
+    checkAuth(null);
+
     return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, toast]);
  
   const title = useMemo(() => {
