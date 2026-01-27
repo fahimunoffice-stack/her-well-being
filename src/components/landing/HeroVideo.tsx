@@ -40,14 +40,20 @@ function getYouTubeVideoId(url: string): string | null {
    const videoUrl = content?.video_url || "";
    const posterUrl = content?.video_poster || "";
 
-  // Convert storage paths to public URLs
-  const resolvedVideoUrl = videoUrl?.startsWith("media/")
-    ? supabase.storage.from("media").getPublicUrl(videoUrl).data.publicUrl
-    : videoUrl;
+   // Convert storage paths to public URLs (memoized to avoid repeated work)
+   const resolvedVideoUrl = useMemo(() => {
+     if (!videoUrl) return "";
+     return videoUrl.startsWith("media/")
+       ? supabase.storage.from("media").getPublicUrl(videoUrl).data.publicUrl
+       : videoUrl;
+   }, [videoUrl]);
 
-  const resolvedPosterUrl = posterUrl?.startsWith("media/")
-    ? supabase.storage.from("media").getPublicUrl(posterUrl).data.publicUrl
-    : posterUrl;
+   const resolvedPosterUrl = useMemo(() => {
+     if (!posterUrl) return "";
+     return posterUrl.startsWith("media/")
+       ? supabase.storage.from("media").getPublicUrl(posterUrl).data.publicUrl
+       : posterUrl;
+   }, [posterUrl]);
 
    const youtubeId = typeof resolvedVideoUrl === "string" ? getYouTubeVideoId(resolvedVideoUrl) : null;
 
@@ -112,12 +118,13 @@ function getYouTubeVideoId(url: string): string | null {
                   className="group relative block w-full aspect-video"
                   aria-label="ভিডিও প্লে করুন"
                 >
-                  {youtubeThumbUrl ? (
+                   {youtubeThumbUrl ? (
                     <img
                       src={youtubeThumbUrl}
                       alt="ভিডিও থাম্বনেইল"
-                      loading="lazy"
+                       loading="eager"
                       decoding="async"
+                       fetchPriority="high"
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -171,12 +178,13 @@ function getYouTubeVideoId(url: string): string | null {
                   className="group relative block w-full aspect-video"
                   aria-label="ভিডিও প্লে করুন"
                 >
-                  {resolvedPosterUrl ? (
+                   {resolvedPosterUrl ? (
                     <img
                       src={resolvedPosterUrl}
                       alt="ভিডিও পোস্টার"
-                      loading="lazy"
+                       loading="eager"
                       decoding="async"
+                       fetchPriority="high"
                       className="h-full w-full object-contain"
                     />
                   ) : (

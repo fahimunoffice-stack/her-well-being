@@ -1,26 +1,36 @@
- import { HeroVideo } from "@/components/landing/HeroVideo";
- import { SalesCopy } from "@/components/landing/SalesCopy";
- import { Reviews } from "@/components/landing/Reviews";
- import { TableOfContents } from "@/components/landing/TableOfContents";
- import { EbookPreview } from "@/components/landing/EbookPreview";
- import { FAQ } from "@/components/landing/FAQ";
- import { FinalCTA } from "@/components/landing/FinalCTA";
-import { Footer } from "@/components/landing/Footer";
+import { Suspense, lazy } from "react";
+import { HeroVideo } from "@/components/landing/HeroVideo";
 import { StickyMobileCTA } from "@/components/landing/StickyMobileCTA";
+
+const SalesCopy = lazy(() => import("@/components/landing/SalesCopy").then((m) => ({ default: m.SalesCopy })));
+const Reviews = lazy(() => import("@/components/landing/Reviews").then((m) => ({ default: m.Reviews })));
+const TableOfContents = lazy(() =>
+  import("@/components/landing/TableOfContents").then((m) => ({ default: m.TableOfContents })),
+);
+const EbookPreview = lazy(() => import("@/components/landing/EbookPreview").then((m) => ({ default: m.EbookPreview })));
+const FAQ = lazy(() => import("@/components/landing/FAQ").then((m) => ({ default: m.FAQ })));
+const FinalCTA = lazy(() => import("@/components/landing/FinalCTA").then((m) => ({ default: m.FinalCTA })));
+const Footer = lazy(() => import("@/components/landing/Footer").then((m) => ({ default: m.Footer })));
  
  const Index = () => {
    return (
-      <div className="min-h-screen bg-background pb-24 md:pb-0">
-       <HeroVideo />
-       <SalesCopy />
-       <Reviews />
-       <TableOfContents />
-       <EbookPreview />
-       <FAQ />
-       <FinalCTA />
+    <div className="min-h-screen bg-background pb-24 md:pb-0">
+      <HeroVideo />
+
+      <Suspense
+        fallback={<div className="mx-auto w-full max-w-7xl px-4 py-10 text-sm text-muted-foreground">Loading…</div>}
+      >
+        <SalesCopy />
+        <Reviews />
+        <TableOfContents />
+        <EbookPreview />
+        <FAQ />
+        <FinalCTA />
         <Footer />
-        <StickyMobileCTA />
-     </div>
+      </Suspense>
+
+      <StickyMobileCTA />
+    </div>
    );
  };
  
