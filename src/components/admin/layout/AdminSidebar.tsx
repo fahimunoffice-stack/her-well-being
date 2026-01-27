@@ -8,6 +8,7 @@ import {
   Book,
   Settings,
   ChartColumn,
+  ScrollText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -32,6 +33,7 @@ const navItems = [
   { title: "Preview Pages", to: `${ADMIN_PATH}/dashboard/pages`, icon: FileImage },
   { title: "Media", to: `${ADMIN_PATH}/dashboard/media`, icon: LayoutDashboard },
   { title: "Ebooks", to: `${ADMIN_PATH}/dashboard/ebooks`, icon: Book },
+  { title: "Logs", to: `${ADMIN_PATH}/dashboard/logs`, icon: ScrollText },
   { title: "Settings", to: `${ADMIN_PATH}/dashboard/settings`, icon: Settings },
 ];
 

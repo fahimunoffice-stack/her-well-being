@@ -6,6 +6,7 @@
  import { Label } from "@/components/ui/label";
  import { Button } from "@/components/ui/button";
  import { useToast } from "@/hooks/use-toast";
+ import { AdminErrorScreen } from "@/components/admin/AdminErrorScreen";
  import { z } from "zod";
 
 // Must match ADMIN_PATH in src/App.tsx
@@ -21,46 +22,43 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
    const { toast } = useToast();
    const [user, setUser] = useState<any>(null);
    const [loading, setLoading] = useState(true);
+    const [authError, setAuthError] = useState<string | null>(null);
    const [formData, setFormData] = useState({ email: "", password: "" });
  
-   useEffect(() => {
-     // Check existing session
-     const checkAuth = async () => {
-        try {
-          const {
-            data: { session },
-            error: sessionError,
-          } = await supabase.auth.getSession();
+    const checkAuth = async () => {
+      setLoading(true);
+      setAuthError(null);
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
 
-          if (sessionError) throw sessionError;
+        if (sessionError) throw sessionError;
 
-          if (session?.user) {
-            // Check if user is admin
-            const { data: roles, error: rolesError } = await supabase
-              .from("user_roles")
-              .select("role")
-              .eq("user_id", session.user.id);
+        if (session?.user) {
+          const { data: roles, error: rolesError } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id);
 
-            if (rolesError) throw rolesError;
+          if (rolesError) throw rolesError;
 
-            if (roles?.some((r) => r.role === "admin")) {
-              navigate(`${ADMIN_PATH}/dashboard`);
-              return;
-            }
+          if (roles?.some((r) => r.role === "admin")) {
+            navigate(`${ADMIN_PATH}/dashboard`);
+            return;
           }
-        } catch (err: any) {
-          // Ensure we never get stuck on the loading screen
-          console.error("AdminLogin checkAuth failed", err);
-          toast({
-            title: "লোডিং সমস্যা",
-            description: "সেশন লোড করা যাচ্ছে না—অনুগ্রহ করে রিফ্রেশ করে আবার চেষ্টা করুন।",
-            variant: "destructive",
-          });
-        } finally {
-          setLoading(false);
         }
-     };
-     checkAuth();
+      } catch (err: any) {
+        console.error("AdminLogin checkAuth failed", err);
+        setAuthError("সেশন/ব্যাকএন্ড লোড করতে সমস্যা হচ্ছে।");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      checkAuth();
  
      // Listen to auth changes
      const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -121,6 +119,17 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
        </div>
      );
    }
+
+    if (authError) {
+      // Dedicated error screen (instead of only toast)
+      return (
+        <AdminErrorScreen
+          title="Admin session load failed"
+          description={authError}
+          onRetry={checkAuth}
+        />
+      );
+    }
  
     return (
       <div className="min-h-screen bg-gradient-to-b from-secondary to-background flex items-center justify-center p-4">
