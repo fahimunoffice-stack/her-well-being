@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MediaUploader } from "@/components/admin/content/MediaUploader";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 
 export type PreviewPageItem = {
   image_url: string;
@@ -27,10 +28,16 @@ export function PreviewPagesEditor({
   const [items, setItems] = useState<PreviewPageItem[]>(initial);
   useEffect(() => setItems(initial), [initial]);
 
+  const isDirty = useMemo(() => JSON.stringify(items) !== JSON.stringify(initial), [items, initial]);
+  useUnsavedChangesWarning(isDirty);
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-4">
-        <CardTitle>Book Preview Pages</CardTitle>
+          <div className="min-w-0">
+            <CardTitle className="truncate">Preview Pages (বইয়ের পেজ)</CardTitle>
+            <div className="text-xs text-muted-foreground">Upload sample pages shown on the landing page</div>
+          </div>
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -39,7 +46,7 @@ export function PreviewPagesEditor({
           >
             Add
           </Button>
-          <Button type="button" onClick={() => onSave(items)} disabled={saving}>
+          <Button type="button" onClick={() => onSave(items)} disabled={saving || !isDirty}>
             {saving ? "Saving..." : "Save"}
           </Button>
         </div>

@@ -27,14 +27,14 @@ import {
 const ADMIN_PATH = "/hd-admin-7f3c9a";
 
 const navItems = [
-  { title: "Orders", to: `${ADMIN_PATH}/dashboard`, icon: ShoppingCart, end: true },
-  { title: "Analytics", to: `${ADMIN_PATH}/dashboard/analytics`, icon: ChartColumn },
-  { title: "Content", to: `${ADMIN_PATH}/dashboard/content`, icon: FileText },
-  { title: "Preview Pages", to: `${ADMIN_PATH}/dashboard/pages`, icon: FileImage },
-  { title: "Media", to: `${ADMIN_PATH}/dashboard/media`, icon: LayoutDashboard },
-  { title: "Ebooks", to: `${ADMIN_PATH}/dashboard/ebooks`, icon: Book },
-  { title: "Logs", to: `${ADMIN_PATH}/dashboard/logs`, icon: ScrollText },
-  { title: "Settings", to: `${ADMIN_PATH}/dashboard/settings`, icon: Settings },
+  { title: "Orders (অর্ডার)", to: `${ADMIN_PATH}/dashboard`, icon: ShoppingCart, end: true },
+  { title: "Analytics (রিপোর্ট)", to: `${ADMIN_PATH}/dashboard/analytics`, icon: ChartColumn },
+  { title: "Content (কনটেন্ট)", to: `${ADMIN_PATH}/dashboard/content`, icon: FileText },
+  { title: "Preview Pages (পেজ)", to: `${ADMIN_PATH}/dashboard/pages`, icon: FileImage },
+  { title: "Media (ফাইল)", to: `${ADMIN_PATH}/dashboard/media`, icon: LayoutDashboard },
+  { title: "Ebooks (বই)", to: `${ADMIN_PATH}/dashboard/ebooks`, icon: Book },
+  { title: "Logs (লগ)", to: `${ADMIN_PATH}/dashboard/logs`, icon: ScrollText },
+  { title: "Settings (সেটিংস)", to: `${ADMIN_PATH}/dashboard/settings`, icon: Settings },
 ];
 
 export function AdminSidebar() {
@@ -58,7 +58,7 @@ export function AdminSidebar() {
           {!collapsed && (
             <div className="min-w-0">
               <div className="font-display truncate text-sm font-semibold text-sidebar-foreground">Home Doctor</div>
-              <div className="truncate text-xs text-muted-foreground">Admin Dashboard</div>
+              <div className="truncate text-xs text-muted-foreground">Admin Dashboard (এডমিন)</div>
             </div>
           )}
         </div>
@@ -79,7 +79,7 @@ export function AdminSidebar() {
                       <NavLink
                         to={item.to}
                         end={item.end}
-                        className="gap-2 rounded-md border-l-4 border-transparent px-2.5 py-2 hover:bg-sidebar-accent"
+                        className="gap-2 rounded-md border-l-4 border-transparent px-2.5 py-3 hover:bg-sidebar-accent"
                         activeClassName="bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-primary font-medium"
                       >
                         <item.icon className="h-4 w-4" />

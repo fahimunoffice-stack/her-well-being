@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { MediaUploader } from "@/components/admin/content/MediaUploader";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 
 export type ReviewItem = {
   name: string;
@@ -47,10 +48,16 @@ export function ReviewsEditor({
 
   useEffect(() => setItems(initial), [initial]);
 
+  const isDirty = useMemo(() => JSON.stringify(items) !== JSON.stringify(initial), [items, initial]);
+  useUnsavedChangesWarning(isDirty);
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-4">
-        <CardTitle>Reviews</CardTitle>
+          <div className="min-w-0">
+            <CardTitle className="truncate">Reviews (রিভিউ)</CardTitle>
+            <div className="text-xs text-muted-foreground">Add text + optional screenshots (একাধিক ছবি যোগ করা যায়)</div>
+          </div>
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -64,7 +71,7 @@ export function ReviewsEditor({
           >
             Add
           </Button>
-          <Button type="button" onClick={() => onSave(items)} disabled={saving}>
+          <Button type="button" onClick={() => onSave(items)} disabled={saving || !isDirty}>
             {saving ? "Saving..." : "Save"}
           </Button>
         </div>

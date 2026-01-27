@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 
 export type TocItem = {
   title: string;
@@ -32,10 +33,16 @@ export function TocEditor({
   const [items, setItems] = useState<TocItem[]>(initial);
   useEffect(() => setItems(initial), [initial]);
 
+  const isDirty = useMemo(() => JSON.stringify(items) !== JSON.stringify(initial), [items, initial]);
+  useUnsavedChangesWarning(isDirty);
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-4">
-        <CardTitle>Table of Contents</CardTitle>
+          <div className="min-w-0">
+            <CardTitle className="truncate">Table of Contents (সূচিপত্র)</CardTitle>
+            <div className="text-xs text-muted-foreground">These items appear on the landing page</div>
+          </div>
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -44,7 +51,7 @@ export function TocEditor({
           >
             Add
           </Button>
-          <Button type="button" onClick={() => onSave(items)} disabled={saving}>
+          <Button type="button" onClick={() => onSave(items)} disabled={saving || !isDirty}>
             {saving ? "Saving..." : "Save"}
           </Button>
         </div>
