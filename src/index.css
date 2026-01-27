@@ -44,7 +44,7 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     /* Typography */
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --font-sans: "Hind Siliguri", Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
     --font-display: Space Grotesk, Inter, ui-sans-serif, system-ui, sans-serif;
 
     --sidebar-background: 0 0% 98%;
@@ -100,7 +100,7 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --font-sans: "Hind Siliguri", Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
 
   /* Admin-only theme (scoped via .admin-theme wrapper) */
