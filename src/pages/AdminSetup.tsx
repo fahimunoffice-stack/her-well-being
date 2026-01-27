@@ -22,7 +22,7 @@ const ADMIN_PATH = "/hd-admin-7f3c9a";
    const { toast } = useToast();
    const [loading, setLoading] = useState(false);
    const [formData, setFormData] = useState({
-     email: "tasinfahimun@gmail.com",
+      email: "",
      password: "",
      setupToken: "",
    });
