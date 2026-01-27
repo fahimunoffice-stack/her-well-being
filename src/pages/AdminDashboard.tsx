@@ -12,6 +12,9 @@ import { EbooksManager } from "@/components/admin/ebooks/EbooksManager";
 import { AdminSettingsPage } from "@/components/admin/settings/AdminSettingsPage";
 import { AdminAnalyticsPage } from "@/components/admin/analytics/AdminAnalyticsPage";
 import { LogOut } from "lucide-react";
+
+// Must match ADMIN_PATH in src/App.tsx
+const ADMIN_PATH = "/hd-admin-7f3c9a";
  
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -27,7 +30,7 @@ const AdminDashboard = () => {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session?.user) {
-        navigate("/admin");
+        navigate(ADMIN_PATH);
         return;
       }
 
@@ -53,7 +56,7 @@ const AdminDashboard = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!session?.user) navigate("/admin");
+      if (!session?.user) navigate(ADMIN_PATH);
     });
 
     return () => subscription.unsubscribe();
@@ -72,7 +75,7 @@ const AdminDashboard = () => {
  
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/admin");
+    navigate(ADMIN_PATH);
   };
  
   if (loading) {

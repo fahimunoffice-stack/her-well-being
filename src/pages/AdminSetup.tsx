@@ -7,6 +7,9 @@
  import { Button } from "@/components/ui/button";
  import { useToast } from "@/hooks/use-toast";
  import { z } from "zod";
+
+// Must match ADMIN_PATH in src/App.tsx
+const ADMIN_PATH = "/hd-admin-7f3c9a";
  
  const setupSchema = z.object({
    email: z.string().trim().email("Valid email required"),
@@ -60,7 +63,7 @@
          description: "Admin user created. You can now login.",
        });
  
-       setTimeout(() => navigate("/admin"), 2000);
+        setTimeout(() => navigate(ADMIN_PATH), 2000);
      } catch (error: any) {
        toast({
          title: "Error",
