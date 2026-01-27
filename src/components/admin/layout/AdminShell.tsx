@@ -3,6 +3,11 @@ import { useLocation } from "react-router-dom";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/layout/AdminSidebar";
 import { useSidebar } from "@/components/ui/sidebar";
+import {
+  AdminThemeToggle,
+  getStoredAdminTheme,
+  setStoredAdminTheme,
+} from "@/components/admin/layout/AdminThemeToggle";
 
 export function AdminShell({
   title,
@@ -37,6 +42,17 @@ function AdminShellInner({
 }) {
   const { isMobile, setOpenMobile } = useSidebar();
 
+  const [adminTheme, setAdminTheme] = React.useState<"default" | "neo">("default");
+
+  React.useEffect(() => {
+    setAdminTheme(getStoredAdminTheme());
+  }, []);
+
+  const handleThemeChange = (next: "default" | "neo") => {
+    setAdminTheme(next);
+    setStoredAdminTheme(next);
+  };
+
   // Mobile UX: navigation এর পর sidebar auto-close
   React.useEffect(() => {
     if (!isMobile) return;
@@ -45,7 +61,10 @@ function AdminShellInner({
   }, [locationKey]);
 
   return (
-    <div className="admin-theme flex min-h-svh w-full overflow-x-hidden">
+    <div
+      className="admin-theme flex min-h-svh w-full overflow-x-hidden"
+      data-admin-theme={adminTheme === "neo" ? "neo" : "default"}
+    >
       <AdminSidebar />
 
       <SidebarInset className="min-w-0 overflow-x-hidden">
@@ -58,7 +77,10 @@ function AdminShellInner({
               </h1>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-2">{actions}</div>
+          <div className="flex shrink-0 items-center gap-2">
+            <AdminThemeToggle value={adminTheme} onChange={handleThemeChange} />
+            {actions}
+          </div>
         </header>
 
         <div className="mx-auto w-full max-w-7xl overflow-x-hidden p-3 md:p-5">
