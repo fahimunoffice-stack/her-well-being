@@ -36,7 +36,13 @@ export function Footer() {
           </div>
 
           <div className="text-center text-xs text-muted-foreground">
-            Developed by <span className="font-medium text-foreground">Vibe Tech</span>
+            <span>
+              © 2026 <span className="font-medium text-foreground">Home Doctor</span>
+            </span>
+            <span className="mx-2">·</span>
+            <span>
+              Developed by <span className="font-medium text-foreground">Vibe Tech</span>
+            </span>
           </div>
         </div>
       </div>
