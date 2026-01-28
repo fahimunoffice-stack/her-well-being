@@ -1,4 +1,4 @@
- import { useMemo, useRef, useState } from "react";
+ import { useMemo, useRef, useState, useEffect } from "react";
  import { ChevronUp, Play } from "lucide-react";
  import { supabase } from "@/integrations/supabase/client";
  import { useSiteContent } from "@/hooks/useSiteContent";
@@ -36,6 +36,7 @@ function getYouTubeVideoId(url: string): string | null {
    const [isPlaying, setIsPlaying] = useState(false);
   const [pendingNativePlay, setPendingNativePlay] = useState(false);
   const nativeVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
  
    const videoUrl = content?.video_url || "";
    const posterUrl = content?.video_poster || "";
@@ -71,6 +72,14 @@ function getYouTubeVideoId(url: string): string | null {
    const youtubeEmbedUrl = youtubeId
      ? `https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1&autoplay=1&mute=0`
      : null;
+
+  // Preload critical poster image
+  useEffect(() => {
+    if (!resolvedPosterUrl && !youtubeThumbUrl) return;
+    const img = new Image();
+    img.src = youtubeThumbUrl || resolvedPosterUrl;
+    img.onload = () => setImageLoaded(true);
+  }, [resolvedPosterUrl, youtubeThumbUrl]);
 
   const startNativePlayback = () => {
     setIsPlaying(true);
@@ -119,18 +128,20 @@ function getYouTubeVideoId(url: string): string | null {
                   className="group relative block w-full aspect-video"
                   aria-label="ভিডিও প্লে করুন"
                 >
-                   {youtubeThumbUrl ? (
+                  <div className={`h-full w-full transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                    {youtubeThumbUrl ? (
                     <img
                       src={youtubeThumbUrl}
                       alt="ভিডিও থাম্বনেইল"
-                       loading="eager"
-                      decoding="async"
                        fetchPriority="high"
+                      decoding="sync"
                       className="h-full w-full object-cover"
                     />
                   ) : (
                     <div className="h-full w-full bg-muted" />
                   )}
+                  </div>
+                  {!imageLoaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
                   <div className="absolute inset-0 bg-foreground/20" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="flex items-center gap-2 rounded-full bg-background/90 px-4 py-2 shadow-lg backdrop-blur transition-transform group-hover:scale-[1.02]">
@@ -179,18 +190,20 @@ function getYouTubeVideoId(url: string): string | null {
                   className="group relative block w-full aspect-video"
                   aria-label="ভিডিও প্লে করুন"
                 >
-                   {resolvedPosterUrl ? (
+                  <div className={`h-full w-full transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                    {resolvedPosterUrl ? (
                     <img
                       src={resolvedPosterUrl}
                       alt="ভিডিও পোস্টার"
-                       loading="eager"
-                      decoding="async"
                        fetchPriority="high"
+                      decoding="sync"
                       className="h-full w-full object-contain"
                     />
                   ) : (
                     <div className="h-full w-full bg-muted" />
                   )}
+                  </div>
+                  {!imageLoaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
                   <div className="absolute inset-0 bg-foreground/20" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="flex items-center gap-2 rounded-full bg-background/90 px-4 py-2 shadow-lg backdrop-blur transition-transform group-hover:scale-[1.02]">
