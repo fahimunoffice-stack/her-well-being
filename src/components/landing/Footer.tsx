@@ -3,39 +3,51 @@ import { Facebook, Mail, Phone } from "lucide-react";
 export function Footer() {
   return (
     <footer className="border-t bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Contact</span>
+      <div className="container mx-auto px-4 py-10">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 text-center">
+          <div className="space-y-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Contact</p>
+            <p className="text-sm text-muted-foreground">যেকোনো প্রয়োজনে নিচের অপশনগুলোতে যোগাযোগ করুন</p>
           </div>
 
-          <div className="flex flex-col items-center gap-3 text-sm md:flex-row md:gap-6">
-            <a
-              href="https://facebook.com/homedoctooor"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 text-foreground hover:text-primary"
-            >
-              <Facebook className="h-4 w-4" />
-              <span>Facebook Page</span>
-            </a>
-            <a
-              href="tel:+8801886841232"
-              className="inline-flex items-center gap-2 text-foreground hover:text-primary"
-            >
-              <Phone className="h-4 w-4" />
-              <span>Mobile: 01886841232</span>
-            </a>
-            <a
-              href="mailto:akibhasan325@gmail.com"
-              className="inline-flex items-center gap-2 text-foreground hover:text-primary"
-            >
-              <Mail className="h-4 w-4" />
-              <span>akibhasan325@gmail.com</span>
-            </a>
-          </div>
+          <ul className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
+            <li>
+              <a
+                href="https://facebook.com/homedoctooor"
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="Facebook Page খুলুন"
+              >
+                <Facebook className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                <span>Facebook</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="tel:+8801886841232"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="ফোন করুন 01886841232"
+              >
+                <Phone className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                <span>01886841232</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="mailto:akibhasan325@gmail.com"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="ইমেইল করুন akibhasan325@gmail.com"
+              >
+                <Mail className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                <span className="truncate">akibhasan325@gmail.com</span>
+              </a>
+            </li>
+          </ul>
 
-          <div className="text-center text-xs text-muted-foreground">
+          <div className="h-px w-full bg-border" aria-hidden="true" />
+
+          <div className="text-center text-xs leading-relaxed text-muted-foreground">
             <span>
               © 2026 <span className="font-medium text-foreground">Home Doctor</span>
             </span>
