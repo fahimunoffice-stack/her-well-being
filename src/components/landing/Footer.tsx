@@ -53,7 +53,15 @@ export function Footer() {
             </span>
             <span className="mx-2">·</span>
             <span>
-              Developed by <span className="font-medium text-foreground">Vibe Tech</span>
+              Developed by{" "}
+              <a
+                href="https://vibeacademy.app/"
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Vibe Academy
+              </a>
             </span>
           </div>
         </div>
