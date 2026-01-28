@@ -98,6 +98,7 @@ function getYouTubeVideoId(url: string): string | null {
    return (
     <section className="relative w-full bg-gradient-to-b from-secondary to-background py-8 md:py-20">
        <div className="container mx-auto px-4">
+        <h1 className="sr-only">Home Doctor ই-বুক — নারীর স্বাস্থ্য গাইড</h1>
          {/* Video */}
           <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl shadow-2xl">
             {youtubeEmbedUrl ? (

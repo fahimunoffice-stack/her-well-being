@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import { HeroVideo } from "@/components/landing/HeroVideo";
 import { StickyMobileCTA } from "@/components/landing/StickyMobileCTA";
+import { SeoSchemas } from "@/components/seo/SeoSchemas";
 
 const SalesCopy = lazy(() => import("@/components/landing/SalesCopy").then((m) => ({ default: m.SalesCopy })));
 const Reviews = lazy(() => import("@/components/landing/Reviews").then((m) => ({ default: m.Reviews })));
@@ -12,6 +13,7 @@ const Footer = lazy(() => import("@/components/landing/Footer").then((m) => ({ d
  const Index = () => {
    return (
     <div className="min-h-screen bg-background pb-24 md:pb-0">
+       <SeoSchemas />
       <HeroVideo />
 
       <Suspense
