@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+ import { Suspense, lazy } from "react";
 import { HeroVideo } from "@/components/landing/HeroVideo";
 import { StickyMobileCTA } from "@/components/landing/StickyMobileCTA";
 import { SeoSchemas } from "@/components/seo/SeoSchemas";
@@ -10,6 +10,11 @@ const FAQ = lazy(() => import("@/components/landing/FAQ").then((m) => ({ default
 const FinalCTA = lazy(() => import("@/components/landing/FinalCTA").then((m) => ({ default: m.FinalCTA })));
 const Footer = lazy(() => import("@/components/landing/Footer").then((m) => ({ default: m.Footer })));
  
+ // Optimized fallback with minimal layout shift
+ const LazyFallback = () => (
+   <div className="mx-auto w-full max-w-7xl px-4" style={{ minHeight: '200px' }} />
+ );
+
  const Index = () => {
    return (
     <div className="min-h-screen bg-background pb-24 md:pb-0">
@@ -17,7 +22,7 @@ const Footer = lazy(() => import("@/components/landing/Footer").then((m) => ({ d
       <HeroVideo />
 
       <Suspense
-        fallback={<div className="mx-auto w-full max-w-7xl px-4 py-10 text-sm text-muted-foreground">Loading…</div>}
+        fallback={<LazyFallback />}
       >
         <SalesCopy />
         <Reviews />
