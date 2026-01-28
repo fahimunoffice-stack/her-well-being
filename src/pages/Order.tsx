@@ -28,6 +28,24 @@ import { useKeyboardInset } from "@/hooks/useKeyboardInset";
    });
    const [submitted, setSubmitted] = useState(false);
 
+    const trackPurchase = useCallback((purchaseValue: unknown) => {
+      if (typeof window === "undefined") return;
+      const fbq = (window as any)?.fbq as undefined | ((...args: any[]) => void);
+      if (!fbq) return;
+
+      const amount = Number(String(purchaseValue ?? "").replace(/[^0-9.]/g, ""));
+      if (!Number.isFinite(amount) || amount <= 0) return;
+
+      try {
+        fbq("track", "Purchase", {
+          currency: "BDT",
+          value: amount,
+        });
+      } catch {
+        // ignore
+      }
+    }, []);
+
   const scrollFocusedIntoView = useCallback((e: React.FocusEvent<HTMLElement>) => {
     // Let the browser finish focusing first
     window.setTimeout(() => {
@@ -80,6 +98,7 @@ import { useKeyboardInset } from "@/hooks/useKeyboardInset";
        if (error) throw error;
      },
      onSuccess: () => {
+        trackPurchase(price);
        setSubmitted(true);
        toast({
          title: "অর্ডার সফল!",
