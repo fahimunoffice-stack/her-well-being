@@ -88,6 +88,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
             ই-বুকের সূচিপত্র এবং কয়েকটি পৃষ্ঠা দেখুন
          </h2>
 
+          <p className="-mt-7 mb-10 text-center text-sm text-muted-foreground">
+            পৃষ্ঠা গুলি পড়তে পৃষ্ঠার উপরে ক্লিক করুন
+          </p>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
             {resolvedPages.map((url, idx) => {
               return (
