@@ -4,9 +4,6 @@ import { StickyMobileCTA } from "@/components/landing/StickyMobileCTA";
 
 const SalesCopy = lazy(() => import("@/components/landing/SalesCopy").then((m) => ({ default: m.SalesCopy })));
 const Reviews = lazy(() => import("@/components/landing/Reviews").then((m) => ({ default: m.Reviews })));
-const TableOfContents = lazy(() =>
-  import("@/components/landing/TableOfContents").then((m) => ({ default: m.TableOfContents })),
-);
 const EbookPreview = lazy(() => import("@/components/landing/EbookPreview").then((m) => ({ default: m.EbookPreview })));
 const FAQ = lazy(() => import("@/components/landing/FAQ").then((m) => ({ default: m.FAQ })));
 const FinalCTA = lazy(() => import("@/components/landing/FinalCTA").then((m) => ({ default: m.FinalCTA })));
@@ -22,7 +19,6 @@ const Footer = lazy(() => import("@/components/landing/Footer").then((m) => ({ d
       >
         <SalesCopy />
         <Reviews />
-        <TableOfContents />
         <EbookPreview />
         <FAQ />
         <FinalCTA />
