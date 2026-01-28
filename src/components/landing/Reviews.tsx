@@ -174,6 +174,18 @@ import {
             </>
           )}
        </div>
+
+        {/* Decorative dotted divider */}
+        <div aria-hidden="true" className="mt-10 md:mt-12 flex justify-center">
+          <div className="flex items-center gap-2">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <span
+                key={i}
+                className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40"
+              />
+            ))}
+          </div>
+        </div>
      </section>
    );
  };
