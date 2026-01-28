@@ -48,7 +48,7 @@ import { useSiteContent } from "@/hooks/useSiteContent";
                 <AccordionTrigger className="text-lg font-semibold text-foreground hover:text-primary py-4 text-left">
                  {faq.question}
                </AccordionTrigger>
-               <AccordionContent className="text-muted-foreground">
+                <AccordionContent className="text-base md:text-lg leading-relaxed text-muted-foreground">
                  {faq.answer}
                </AccordionContent>
              </AccordionItem>
